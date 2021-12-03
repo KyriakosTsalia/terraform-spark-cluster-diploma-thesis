@@ -1,0 +1,77 @@
+version: "3.7"
+
+services:
+  spark-master:
+    container_name: spark-master
+    build: './docker-images/master'
+    ports:
+      - 8080:8080
+      - 6066:6066
+    environment:
+      - RUNNING_LOCALLY=1    
+    networks:
+      - spark-cluster
+
+  spark-worker_1: &spark-worker
+    container_name: spark-worker_1 
+    build: './docker-images/worker'
+    depends_on:
+      - spark-master
+    ports:
+      - 8081:8081
+      - 4040:4040
+      - 4041:4041
+      - 4042:4042     
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - RUNNING_LOCALLY=1
+# for resource limiting, use the --compatibility flag
+# "deploy is taken into account only in swarm mode, so to override this and not go back to docker-compose version "2", 
+# if the compatibility flag is set, compose will attempt to convert deploy keys in v3 files to their non-Swarm equivalent"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    networks:
+      - spark-cluster
+
+  spark-worker_2:
+    <<: *spark-worker
+    container_name: spark-worker_2
+    ports:
+      - 8082:8081
+      - 4043:4040
+      - 4044:4041
+      - 4045:4042
+  
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./docker-images/prometheus/prometheus-local.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - spark-cluster
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    volumes:
+      - ./docker-images/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker-images/grafana/datasource-local.yml:/etc/grafana/provisioning/datasources/all.yml
+      - ./docker-images/grafana/config.ini:/etc/grafana/config.ini
+      - ./docker-images/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin_user
+      - GF_SECURITY_ADMIN_PASSWORD=admin_password
+    networks:
+      - spark-cluster
+
+networks:
+  spark-cluster:

@@ -1,0 +1,129 @@
+# my global config
+global:
+    scrape_interval:     5s # Set the scrape interval to every 5 seconds. Default is every 1 minute.
+    evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+    # scrape_timeout is set to the global default (10s).
+
+scrape_configs:
+    # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+    - job_name: 'prometheus'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+      static_configs:
+        - targets: ['localhost:9090']
+
+    - job_name: 'spark-master-applications'
+      metrics_path: '/metrics/applications/prometheus/'
+      ec2_sd_configs:
+        - region: eu-central-1
+          port: 8080
+      relabel_configs:
+        - source_labels: [__meta_ec2_tag_Name]
+          regex: spark-master.*
+          action: keep
+
+    - job_name: 'spark-master'
+      metrics_path: '/metrics/master/prometheus/'
+      ec2_sd_configs:
+        - region: eu-central-1
+          port: 8080
+      relabel_configs:
+        - source_labels: [__meta_ec2_tag_Name]
+          regex: spark-master.*
+          action: keep
+
+    - job_name: 'spark-workers'
+      metrics_path: '/metrics/prometheus/'
+      ec2_sd_configs:
+        - region: eu-central-1
+          port: 8081
+      relabel_configs:
+        - source_labels: [__meta_ec2_tag_Name]
+          regex: spark-worker-.*
+          action: keep
+
+    - job_name: 'spark-executors'
+      metrics_path: '/metrics/executors/prometheus/'
+      ec2_sd_configs:
+        - region: eu-central-1
+          port: 4040
+        - region: eu-central-1
+          port: 4041
+        - region: eu-central-1
+          port: 4042
+        - region: eu-central-1
+          port: 4043
+        - region: eu-central-1
+          port: 4044
+        - region: eu-central-1
+          port: 4045
+        - region: eu-central-1
+          port: 4046
+        - region: eu-central-1
+          port: 4047
+        - region: eu-central-1
+          port: 4048
+        - region: eu-central-1
+          port: 4049
+        - region: eu-central-1
+          port: 4050
+        - region: eu-central-1
+          port: 4051
+        - region: eu-central-1
+          port: 4052
+        - region: eu-central-1
+          port: 4053
+        - region: eu-central-1
+          port: 4054
+        - region: eu-central-1
+          port: 4055
+      relabel_configs:
+        - source_labels: [__meta_ec2_tag_Name]
+          regex: spark-gateway.*
+          action: keep
+
+    - job_name: 'spark-drivers'
+      metrics_path: '/metrics/prometheus/'
+      ec2_sd_configs:
+        - region: eu-central-1
+          port: 4040
+        - region: eu-central-1
+          port: 4041
+        - region: eu-central-1
+          port: 4042
+        - region: eu-central-1
+          port: 4043
+        - region: eu-central-1
+          port: 4044
+        - region: eu-central-1
+          port: 4045
+        - region: eu-central-1
+          port: 4046
+        - region: eu-central-1
+          port: 4047
+        - region: eu-central-1
+          port: 4048
+        - region: eu-central-1
+          port: 4049
+        - region: eu-central-1
+          port: 4050
+        - region: eu-central-1
+          port: 4051
+        - region: eu-central-1
+          port: 4052
+        - region: eu-central-1
+          port: 4053
+        - region: eu-central-1
+          port: 4054
+        - region: eu-central-1
+          port: 4055
+      relabel_configs:
+        - source_labels: [__meta_ec2_tag_Name]
+          regex: spark-gateway.*
+          action: keep
+      metric_relabel_configs: 
+        - source_labels: [__name__]
+          target_label: __name__
+          regex: 'metrics_.+_driver_([a-zA-Z_]{1,})'
+          replacement: 'metrics_spark_driver_$1'
+

@@ -1,0 +1,16 @@
+# s3 bucket
+terraform-s3-bucket/.terraform/
+terraform-s3-bucket/terraform.tfstate
+terraform-s3-bucket/terraform.tfstate.backup
+terraform-s3-bucket/terraform.tfvars
+terraform-s3-bucket/out.terraform
+
+# spark cluster
+terraform-cluster/.terraform/
+terraform-cluster/terraform.tfstate
+terraform-cluster/terraform.tfstate.backup
+terraform-cluster/terraform.tfvars
+terraform-cluster/out.terraform
+terraform-cluster/keys/spark-*
+terraform-cluster/keys/prom-graf-*
+terraform-cluster/cluster_ips.txt

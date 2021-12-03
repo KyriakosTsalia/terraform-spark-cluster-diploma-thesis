@@ -1,0 +1,9 @@
+# input parameters
+variable "REGION" {}
+variable "IP_RANGE" {}
+variable "INSTANCE_TENANCY" {}
+variable "ENABLE_DNS_SUPPORT" {}
+variable "ENABLE_DNS_HOSTNAMES" {}
+variable "ENABLE_CLASSICLINK" {}
+variable "PUBLIC_SUBNETS" {}
+variable "PRIVATE_SUBNETS" {}
